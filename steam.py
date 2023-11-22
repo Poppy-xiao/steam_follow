@@ -210,7 +210,7 @@ async def update_game_status():
         personaname = friend.get("personaname", "")
         gameextrainfo = friend.get("gameextrainfo", "")
         avatarfull = friend["avatarfull"]
-        personastate = friend.get("personastate", 0)
+        personastate = friend["personastate"] if friend["personastate"] else 0,
 
         # 检查是否需要更新startTime
         current_start_time = playing_state.get(steamid, {}).get("startTime")

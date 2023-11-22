@@ -134,9 +134,14 @@ async def create_player_status_image(msg):
     avatar_path = os.path.join(img_folder, f'{key}.png')
     avatar_url = msg["avatarfull"]
     await download_avatar_image(avatar_url, avatar_path)
-    game_info = msg["gameextrainfo"] if msg["gameextrainfo"] else 'Oneline'
-    status_text = 'is now playing' if msg["gameextrainfo"] else 'is not playing'
-    name = msg["personaname"]
+    if msg["personastate"] == 0:
+        game_info = 'Offline'
+        status_text = ""
+        name = msg["personaname"]
+    else:
+        game_info = msg["gameextrainfo"] if msg["gameextrainfo"] else 'Online'
+        status_text = 'is now playing' if msg["gameextrainfo"] else 'is not playing'
+        name = msg["personaname"]
     return draw_rectangle_with_image_and_text(image_path=avatar_path, name=name, game=game_info, status=status_text)
 
 async def create_and_send_player_status_image(msg,old_state=None):
@@ -149,7 +154,7 @@ async def create_and_send_player_status_image(msg,old_state=None):
         status_text = ""
         name = msg["personaname"]
     else:
-        game_info = msg["gameextrainfo"] if msg["gameextrainfo"] else 'Oneline'
+        game_info = msg["gameextrainfo"] if msg["gameextrainfo"] else 'Online'
         status_text = 'is now playing' if msg["gameextrainfo"] else 'is not playing'
         name = msg["personaname"]
     
@@ -211,6 +216,8 @@ async def update_game_status():
         current_start_time = playing_state.get(steamid, {}).get("startTime")
         if current_start_time is None and gameextrainfo and playing_state.get(steamid, {}).get("gameextrainfo", "") == "":
             new_start_time = int(time.time())
+        elif personastate == 0:
+            new_start_time = None
         else:
             new_start_time = current_start_time
 
